@@ -1,0 +1,84 @@
+
+// Example of a simple usecase of xraymc
+// This example run a monte carlo simulation of a
+// pecil beam directed onto a cylinder to obtain depthdose
+
+// Include xraymc header files neede here, this might be simplified in the future
+#include "xraymc/beams/pencilbeam.hpp"
+#include "xraymc/transport.hpp"
+#include "xraymc/world/visualization/visualizeworld.hpp"
+#include "xraymc/world/world.hpp"
+#include "xraymc/world/worlditems/depthdose.hpp"
+
+#include <iostream>
+
+int main()
+{
+    // We start by creating some names, xraymc is a template library
+
+    using Beam = xraymc::PencilBeam<>;
+    using DepthDose = xraymc::DepthDose<>;
+    using World = xraymc::World<DepthDose>;
+    using Material = xraymc::Material<>;
+
+    World world;
+    world.reserveNumberOfItems(1);
+
+    auto &item = world.addItem<DepthDose>();
+
+    item.setRadius(2);
+    item.setDirection({0, 0, -1});
+    item.setLenght(10);
+    item.setResolution(100);
+
+    // Material factory
+    auto aluminum_material = Material::byZ(13).value();
+    auto aluminum_density = xraymc::AtomHandler::Atom(13).standardDensity;
+
+    auto pmma_material = Material::byNistName("Polymethyl Methacralate (Lucite, Perspex)").value();
+    auto pmma_density = xraymc::NISTMaterials::density("Polymethyl Methacralate (Lucite, Perspex)");
+
+    auto water_material = Material::byChemicalFormula("H2O").value();
+    auto water_density = 1.0;
+
+    item.setMaterial(aluminum_material, aluminum_density);
+
+    // After we are done editing materials
+    world.build(1.0);
+
+    Beam beam;
+    beam.setPosition({0, 0, 10});
+    beam.setDirection({0, 0, -1});
+    beam.setEnergy(70); // keV
+    beam.setAirKerma(1.0);
+    beam.setNumberOfExposures(100);
+    beam.setNumberOfParticlesPerExposure(1E6);
+
+    xraymc::Transport transport;
+    // transport.setNumberOfThreads(20);
+    transport.runConsole(world, beam);
+
+    double max_dose = 0;
+    std::cout << "Depth [cm], Dose [keV], NumberOfEvents, Relative uncertanty [%]\n";
+    for (const auto [depth, dose] : item.depthDoseScored())
+    {
+        std::cout << depth << ", " << dose.dose();
+        std::cout << ", " << dose.numberOfEvents();
+        std::cout << ", " << dose.relativeUncertainty() << std::endl;
+        max_dose = std::max(max_dose, dose.dose());
+    }
+
+    xraymc::VisualizeWorld viz(world);
+    viz.setDistance(300);
+    viz.setAzimuthalAngleDeg(60);
+    viz.suggestFOV(1);
+    auto buffer = viz.createBuffer(1024, 1024);
+    viz.generate(world, buffer);
+    viz.savePNG("pencilbeam.png", buffer);
+
+    viz.addColorByValueItem(world.getItemPointers()[0]);
+    viz.setColorByValueMinMax(0, max_dose);
+    viz.generate(world, buffer);
+    viz.savePNG("pencilbeam_color.png", buffer);
+    return EXIT_SUCCESS;
+}
