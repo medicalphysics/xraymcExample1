@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Fetch xraymc library
 # xraymc is rather lightweight and is designed to be downloaded at 
 # configure time by cmake's FetchContent module
-#
+
 # Include CMakes FetchContent module
 include(FetchContent)
 # Specify where to fint xraymc
@@ -20,9 +20,9 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/medicalphysics/XRayMClib.git # Git address
     GIT_TAG develop # Git branch name (master for stable version) 
 )
-# Optional make xraymc download material database from IAEA for you
+# Optional, make xraymc download material database from IAEA for you
 set(XRAYMCLIB_EPICS_DOWNLOAD "ON")
-# Optional include option to save png files
+# Optional, include option to save png files
 set(XRAYMCLIB_USE_LOADPNG "ON")
 
 # Fetching the xraylib library
