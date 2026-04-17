@@ -35,12 +35,3 @@ target_link_libraries(xraymcexample1 PRIVATE libxraymc)
 # Making cmake copy a binary physics database to target build location
 # xraymc is dependent on this database
 xraymclib_add_physics_list(xraymcexample1)
-
-
-
-
-
-
-
-
-

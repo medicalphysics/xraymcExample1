@@ -1,22 +1,18 @@
 
 // Example of a simple usecase of xraymc
 // This example run a monte carlo simulation of a
-// pecil beam directed onto a cylinder to obtain depthdose
+// pecil beam directed onto a cylinder to obtain depthdose data
 
-// Include xraymc header files neede here, this might be simplified in the future
-#include "xraymc/beams/pencilbeam.hpp"
-#include "xraymc/transport.hpp"
-#include "xraymc/world/visualization/visualizeworld.hpp"
-#include "xraymc/world/world.hpp"
-#include "xraymc/world/worlditems/depthdose.hpp"
+// Include xraymc header files
+#include "xraymc/xraymc.hpp"
 
 #include <iostream>
 
 int main()
 {
-    // We start by creating some names, xraymc is a template library and typically there are a couple of 
+    // We start by creating some names, xraymc is a template library and typically there are a couple of
     // compile time parameters to be set at an item that is included in the world
-    // All items included in xraymc 
+    // All items included in xraymc
 
     using Beam = xraymc::PencilBeam<>;
     using DepthDose = xraymc::DepthDose<>;
