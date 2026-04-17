@@ -78,7 +78,7 @@ int main()
 
     // Iterate over depth-dose bins and print depth, dose, event count, and relative uncertainty
     double max_dose = 0;
-    std::cout << "\nDepth [cm], Dose [keV], NumberOfEvents, Relative uncertanty [%]\n";
+    std::cout << "\nDepth[cm], Dose[mGy], NumberOfEvents, Relative uncertanty[%]\n";
     for (const auto [depth, dose] : item.depthDoseScored())
     {
         std::cout << depth << ", " << dose.dose();
